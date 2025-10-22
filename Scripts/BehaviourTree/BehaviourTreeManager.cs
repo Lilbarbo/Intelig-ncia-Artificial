@@ -68,18 +68,18 @@ public class BehaviourTreeManager : MonoBehaviour
     private Node rootNode;
     
     
-    private void Awake()
+    private void Awake() //Método chamado antes do Awake
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
-    void Start()
+    void Start() //Método chamado no primeiro frame
     {
         fomeAtual = fomeMaxima;
         InitializeTree();
     }
 
-    void Update()
+    void Update() //A cada frame
     {
         Tick();
         
@@ -90,7 +90,7 @@ public class BehaviourTreeManager : MonoBehaviour
         }
     }
 
-    private void Tick()
+    private void Tick() //Método que verifica o STATUS que a árvore retornou (a todo momento)
     {
         if (rootNode == null) return;
 
@@ -110,7 +110,7 @@ public class BehaviourTreeManager : MonoBehaviour
     }
 
 
-    private void InitializeTree()
+    private void InitializeTree() //Inicializa o NÓ RAIZ do TRABALHADOR selecionado (Coletor, Construtor ou Refinador)
     {
         switch (tipoDeTrabalhador)
         {
@@ -129,7 +129,7 @@ public class BehaviourTreeManager : MonoBehaviour
         rootNode.SetManager(this);
     }
 
-    public void Patrulhar()
+    public void Patrulhar() //Fica se movimentando em pontos específicos do mapa
     {
         navMeshAgent.SetDestination(patrolPoints[currentPatrolIndex].position);
         if (navMeshAgent.remainingDistance <= 2f)
@@ -138,7 +138,7 @@ public class BehaviourTreeManager : MonoBehaviour
         }
     }
 
-    public bool ColetarRecurso(TipoDeRecuso tipo)
+    public bool ColetarRecurso(TipoDeRecuso tipo) //Coleta e armazena um determinado recurso
     {
         if (tipo == TipoDeRecuso.Nenhum) return false;
 
@@ -157,7 +157,7 @@ public class BehaviourTreeManager : MonoBehaviour
         return true;
     }
 
-    public bool RemoverRecurso()
+    public bool RemoverRecurso() //Remove o recurso do PRÓPRIO INVENTÁRIO
     {
         if (tipoRecursoAtual == TipoDeRecuso.Nenhum || InventarioVazio()) return false;
         
@@ -168,7 +168,7 @@ public class BehaviourTreeManager : MonoBehaviour
         return true;
     }
 
-    public bool SeAlimentar()
+    public bool SeAlimentar() //Come
     {
         if(!EstouComFome()) return false;
         
@@ -176,7 +176,7 @@ public class BehaviourTreeManager : MonoBehaviour
         return true;
     }
     
-    public TipoDeRecuso PegarTipoDeRecursoAtual()
+    public TipoDeRecuso PegarTipoDeRecursoAtual() //Pega a LAYER do RECURSO MAIS PRÓXIMO (posicaoArvoreProxima) e armazena
     {
         if (posicaoArvoreProxima == null)
             return TipoDeRecuso.Nenhum;
@@ -195,13 +195,13 @@ public class BehaviourTreeManager : MonoBehaviour
         return TipoDeRecuso.Nenhum;
     }
 
-    public void Morrer()
+    public void Morrer() //Se deleta
     {
         scripsCabanas.trabalhadoresAtivos--;
         Destroy(gameObject);
     }
 
-    public bool TemRecursoProximo() 
+    public bool TemRecursoProximo() //Verifica se há recurso próximos e armazena sua POSIÇÃO
     {
         var layerRecurso = layerArvore | layerPedra | layerComida;
         var colliderArvores = Physics.OverlapSphere(transform.position, detectionRange, layerRecurso);
@@ -228,18 +228,20 @@ public class BehaviourTreeManager : MonoBehaviour
         return posicaoArvoreProxima != null;
     }
     
-    public void RemoverRecursoDoMapa()
+    public void RemoverRecursoDoMapa() //Destroi o objeto do recurso coletado
     {
         if (posicaoArvoreProxima == null) return;
         Destroy(posicaoArvoreProxima.gameObject);
     }
-    
+
+    //Verificações em relação ao INVENTÁRIO ou FOME do trabalhador
     public bool EstouComFome() => fomeAtual <= fomeMaxima * 0.3;
     public bool InventarioCheio() => capacidadeAtual >= 1;
     public bool InventarioVazio() => capacidadeAtual == 0;
-    public bool TemMadeira() => recursoQueEstouCarregando == TipoDeRecuso.Madeira; //Se der merda volte aqui
+    public bool TemMadeira() => recursoQueEstouCarregando == TipoDeRecuso.Madeira; 
     public bool TemPedra() => recursoQueEstouCarregando == TipoDeRecuso.Pedra;
     public bool TemComida() =>  recursoQueEstouCarregando == TipoDeRecuso.Comida;
     public bool TemPedraRefinada() => recursoQueEstouCarregando == TipoDeRecuso.PedraRefinada;
     public bool TemMadeiraRefinada() => recursoQueEstouCarregando == TipoDeRecuso.MadeiraRefinada;
 }
+
